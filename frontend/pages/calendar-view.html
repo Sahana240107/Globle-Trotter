@@ -1,15 +1,583 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Calendar</title>
-  <link rel="stylesheet" href="../css/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calendar View | GlobalTrotter</title>
+  <style>
+    /* ===== RESET & BASE ===== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #0f0f23 0%, #1a1a3e 50%, #2a1a4e 100%);
+      color: white;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    /* ===== VERTICAL CONTAINER ===== */
+    .vertical-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* ===== BRAND ===== */
+    .brand {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .brand h1 {
+      font-size: clamp(28px, 5vw, 48px);
+      background: linear-gradient(135deg, #25e6da, #4adeff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    /* ===== SEARCH ===== */
+    .search-input {
+      width: 100%;
+      max-width: 500px;
+      margin: 0 auto;
+      padding: 16px 24px;
+      background: rgba(255,255,255,0.08);
+      border: 2px solid rgba(255,255,255,0.1);
+      border-radius: 50px;
+      font-size: 16px;
+      color: white;
+      backdrop-filter: blur(20px);
+      transition: all 0.3s ease;
+    }
+
+    .search-input::placeholder {
+      color: rgba(255,255,255,0.6);
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: #25e6da;
+      box-shadow: 0 0 0 4px rgba(37, 230, 218, 0.1);
+    }
+
+    /* ===== ENHANCED CONTROLS SECTION ===== */
+    .controls-section {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(20px);
+      border-radius: 24px;
+      padding: 24px;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .controls-row {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    /* GROUP BY - Dropdown (IMPROVED HIGH CONTRAST) */
+    .group-control {
+      position: relative;
+      min-width: 160px;
+    }
+
+    .group-select {
+      width: 100%;
+      padding: 14px 44px 14px 20px;
+      background: rgba(15, 15, 35, 0.85); /* Darker base for contrast */
+      border: 2px solid rgba(255,255,255,0.3);
+      border-radius: 20px;
+      color: #ffffff !important; /* Forced white text */
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      backdrop-filter: blur(20px);
+      transition: all 0.3s ease;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+      background-position: right 16px center;
+      background-repeat: no-repeat;
+      background-size: 18px;
+    }
+
+    .group-select:hover {
+      background: rgba(20, 20, 45, 0.95);
+      border-color: rgba(255,255,255,0.5);
+      box-shadow: 0 4px 20px rgba(37,230,218,0.2);
+    }
+
+    .group-select:focus {
+      outline: none;
+      border-color: #25e6da;
+      background: rgba(20, 20, 45, 0.95);
+      box-shadow: 0 0 0 4px rgba(37,230,218,0.2);
+    }
+
+    /* Ensure dropdown options have high contrast */
+    .group-select option {
+      background: #1a1a3e;
+      color: #ffffff;
+      padding: 10px;
+    }
+
+    .group-select option:hover {
+      background: #25e6da;
+      color: #003333;
+    }
+
+    /* FILTER - Multi-select chips */
+    .filter-control {
+      min-width: 220px;
+    }
+
+    .filter-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 12px 16px;
+      background: rgba(255,255,255,0.12);
+      border: 2px solid rgba(255,255,255,0.1);
+      border-radius: 20px;
+      backdrop-filter: blur(20px);
+    }
+
+    .filter-chip {
+      padding: 6px 12px;
+      background: rgba(37,230,218,0.2);
+      color: #003333;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: 1px solid rgba(37,230,218,0.4);
+    }
+
+    .filter-chip:hover {
+      background: rgba(37,230,218,0.4);
+      transform: scale(1.05);
+    }
+
+    .filter-chip.active {
+      background: #25e6da;
+      box-shadow: 0 4px 12px rgba(37,230,218,0.4);
+    }
+
+    /* SORT - Segmented control */
+    .sort-control {
+      min-width: 180px;
+    }
+
+    .sort-segmented {
+      display: flex;
+      background: rgba(255,255,255,0.12);
+      border-radius: 20px;
+      overflow: hidden;
+      border: 2px solid rgba(255,255,255,0.1);
+      backdrop-filter: blur(20px);
+    }
+
+    .sort-segment {
+      flex: 1;
+      padding: 12px 8px;
+      background: transparent;
+      color: rgba(255,255,255,0.8);
+      border: none;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .sort-segment.active,
+    .sort-segment:hover {
+      background: linear-gradient(135deg, #25e6da, #4adeff);
+      color: #003333;
+    }
+
+    /* Legend */
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      justify-content: center;
+      font-size: 12px;
+      opacity: 0.9;
+      margin-top: 8px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .legend-color {
+      width: 12px;
+      height: 12px;
+      border-radius: 3px;
+    }
+
+    /* ===== PAGE TITLE ===== */
+    .page-title {
+      text-align: center;
+      font-size: clamp(24px, 4vw, 32px);
+      font-weight: 600;
+      margin: 20px 0;
+    }
+
+    /* ===== CALENDAR ===== */
+    .calendar {
+      width: 100%;
+      background: rgba(255,255,255,0.06);
+      backdrop-filter: blur(30px);
+      border-radius: 28px;
+      padding: 32px;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 28px;
+    }
+
+    .calendar-header h3 {
+      font-size: clamp(22px, 3vw, 28px);
+      font-weight: 700;
+    }
+
+    .calendar-header button {
+      width: 44px;
+      height: 44px;
+      background: linear-gradient(135deg, rgba(37,230,218,0.2), rgba(74,222,255,0.2));
+      border: 2px solid rgba(37,230,218,0.3);
+      color: white;
+      font-size: 18px;
+      font-weight: 600;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(20px);
+    }
+
+    .calendar-header button:hover {
+      background: linear-gradient(135deg, rgba(37,230,218,0.4), rgba(74,222,255,0.4));
+      transform: scale(1.05);
+      box-shadow: 0 8px 25px rgba(37,230,218,0.3);
+    }
+
+    /* ===== PERFECTLY FITTING GRID ===== */
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      grid-auto-rows: minmax(110px, auto);
+      gap: 16px;
+      width: 100%;
+      min-height: 420px;
+    }
+
+    .day {
+      background: rgba(255,255,255,0.10);
+      border-radius: 18px;
+      padding: 14px 12px;
+      font-size: 15px;
+      font-weight: 500;
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 1px solid rgba(255,255,255,0.08);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .day:hover {
+      background: rgba(255,255,255,0.18);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 30px rgba(0,0,0,0.3);
+      border-color: rgba(37,230,218,0.4);
+    }
+
+    .day strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 16px;
+      color: #e2e8f0;
+    }
+
+    .day.empty {
+      background: rgba(255,255,255,0.04);
+      cursor: default;
+    }
+
+    .day.empty:hover {
+      background: rgba(255,255,255,0.06);
+      transform: none;
+      box-shadow: none;
+      border-color: rgba(255,255,255,0.04);
+    }
+
+    .event {
+      background: linear-gradient(135deg, #25e6da, #4adeff);
+      color: #003333;
+      border-radius: 8px;
+      padding: 6px 8px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-top: 6px;
+      max-height: 24px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      box-shadow: 0 2px 8px rgba(37,230,218,0.3);
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 768px) {
+      body { padding: 12px; }
+      .calendar { padding: 20px; border-radius: 20px; }
+      .calendar-grid { grid-auto-rows: 90px; gap: 12px; min-height: 360px; }
+      .controls-section { padding: 16px; }
+      .controls-row { flex-direction: column; align-items: center; }
+      .group-control, .filter-control, .sort-control { width: 100%; max-width: 300px; }
+    }
+  </style>
 </head>
 <body>
 
-<h2>Calendar View</h2>
-<p>Trip days highlighted here</p>
+<!-- ===== VERTICAL CONTAINER ===== -->
+<div class="vertical-container">
 
-<button onclick="location.href='dashboard.html'">Back</button>
+  <!-- BRAND -->
+  <div class="brand">
+    <h1>GlobalTrotter</h1>
+  </div>
+
+  <!-- SEARCH -->
+  <input
+    type="text"
+    class="search-input"
+    placeholder="Search trips..."
+  />
+
+  <!-- ENHANCED CONTROLS -->
+  <div class="controls-section">
+    <div class="controls-row">
+      <!-- GROUP BY Dropdown (FIXED HIGH CONTRAST) -->
+      <div class="group-control">
+        <select class="group-select" id="groupBy">
+          <option value="none">Group by: None</option>
+          <option value="destination">Destination</option>
+          <option value="type">Trip Type</option>
+          <option value="duration">Duration</option>
+        </select>
+      </div>
+
+      <!-- FILTER Chips -->
+      <div class="filter-control">
+        <div class="filter-chips">
+          <span class="filter-chip active" data-filter="all">All Trips</span>
+          <span class="filter-chip" data-filter="active">Active</span>
+          <span class="filter-chip" data-filter="past">Past</span>
+          <span class="filter-chip" data-filter="flight">Flights</span>
+          <span class="filter-chip" data-filter="hotel">Hotels</span>
+        </div>
+      </div>
+
+      <!-- SORT Segmented -->
+      <div class="sort-control">
+        <div class="sort-segmented">
+          <button class="sort-segment active" data-sort="date">Date</button>
+          <button class="sort-segment" data-sort="name">Name</button>
+          <button class="sort-segment" data-sort="duration">Duration</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- LEGEND -->
+    <div class="legend">
+      <div class="legend-item">
+        <div class="legend-color" style="background: linear-gradient(135deg, #25e6da, #4adeff);"></div>
+        <span>Flight</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background: linear-gradient(135deg, #ff6b6b, #ff8e8e);"></div>
+        <span>Hotel</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background: linear-gradient(135deg, #ffd93d, #ffe773);"></div>
+        <span>Activity</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE TITLE -->
+  <h2 class="page-title">Calendar View</h2>
+
+  <!-- CALENDAR -->
+  <div class="calendar">
+    <div class="calendar-header">
+      <button onclick="prevMonth()">←</button>
+      <h3 id="monthYear"></h3>
+      <button onclick="nextMonth()">→</button>
+    </div>
+
+    <div class="calendar-grid" id="calendarGrid"></div>
+  </div>
+
+</div>
+
+<script>
+/* ===== ENHANCED CONTROLS FUNCTIONALITY ===== */
+let currentDate = new Date();
+let currentFilters = { type: 'all', search: '' };
+let currentSort = 'date';
+let currentGroup = 'none';
+
+// Controls Event Listeners
+document.addEventListener('DOMContentLoaded', function() {
+  // Group by
+  document.getElementById('groupBy').addEventListener('change', function(e) {
+    currentGroup = e.target.value;
+    console.log('Grouped by:', currentGroup);
+    loadCalendar();
+  });
+
+  // Filter chips
+  document.querySelectorAll('.filter-chip').forEach(chip => {
+    chip.addEventListener('click', function() {
+      document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+      this.classList.add('active');
+      currentFilters.type = this.dataset.filter;
+      loadCalendar();
+    });
+  });
+
+  // Sort segments
+  document.querySelectorAll('.sort-segment').forEach(segment => {
+    segment.addEventListener('click', function() {
+      document.querySelectorAll('.sort-segment').forEach(s => s.classList.remove('active'));
+      this.classList.add('active');
+      currentSort = this.dataset.sort;
+      loadCalendar();
+    });
+  });
+
+  // Search
+  document.querySelector('.search-input').addEventListener('input', function(e) {
+    currentFilters.search = e.target.value.toLowerCase();
+    loadCalendar();
+  });
+});
+
+async function loadCalendar(userId = 1) {
+  const monthYear = document.getElementById("monthYear");
+  const grid = document.getElementById("calendarGrid");
+
+  const year = currentDate.getFullYear();
+  const month = currentDate.getMonth();
+
+  monthYear.innerText = currentDate.toLocaleString("default", {
+    month: "long",
+    year: "numeric"
+  });
+
+  grid.innerHTML = "";
+
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+  // Enhanced mock data with categories
+  const mockTrips = [
+    { trip_name: "Paris ✈️", start_date: "2026-01-15", end_date: "2026-01-20", type: "flight", category: 0 },
+    { trip_name: "Tokyo 🗼", start_date: "2026-01-22", end_date: "2026-01-28", type: "hotel", category: 1 },
+    { trip_name: "Rome 🇮🇹", start_date: "2026-01-10", end_date: "2026-01-12", type: "flight", category: 0 },
+    { trip_name: "London 🎡", start_date: "2026-01-25", end_date: "2026-01-27", type: "activity", category: 2 },
+    { trip_name: "Barcelona 🏖️", start_date: "2026-01-05", end_date: "2026-01-08", type: "hotel", category: 1 }
+  ];
+
+  // Apply filters
+  let filteredTrips = mockTrips.filter(trip => {
+    if (currentFilters.type !== 'all' && trip.type !== currentFilters.type) return false;
+    if (currentFilters.search && !trip.trip_name.toLowerCase().includes(currentFilters.search)) return false;
+    return true;
+  });
+
+  // Apply sort
+  filteredTrips.sort((a, b) => {
+    switch(currentSort) {
+      case 'name': return a.trip_name.localeCompare(b.trip_name);
+      case 'duration': return (new Date(a.end_date) - new Date(a.start_date)) - (new Date(b.end_date) - new Date(b.start_date));
+      default: return new Date(a.start_date) - new Date(b.start_date);
+    }
+  });
+
+  // Empty leading cells
+  for (let i = 0; i < firstDay; i++) {
+    grid.innerHTML += `<div class="day empty"></div>`;
+  }
+
+  // Days with filtered/sorted trips
+  for (let day = 1; day <= daysInMonth; day++) {
+    const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+    const dayTrips = filteredTrips.filter(t => t.start_date <= dateStr && t.end_date >= dateStr);
+
+    let html = `<div class="day"><strong>${day}</strong>`;
+    dayTrips.slice(0, 3).forEach((t, index) => {  // Show max 3 events
+      const colors = [
+        'linear-gradient(135deg, #25e6da, #4adeff)',  // Flight
+        'linear-gradient(135deg, #ff6b6b, #ff8e8e)',  // Hotel  
+        'linear-gradient(135deg, #ffd93d, #ffe773)'   // Activity
+      ];
+      html += `<div class="event" style="background: ${colors[t.category]};">${t.trip_name}</div>`;
+    });
+    html += `</div>`;
+    grid.innerHTML += html;
+  }
+
+  // Fill remaining cells for perfect 6x7 grid
+  const totalCells = firstDay + daysInMonth;
+  const remainingCells = 42 - totalCells;
+  for (let i = 0; i < remainingCells; i++) {
+    grid.innerHTML += `<div class="day empty"></div>`;
+  }
+}
+
+function prevMonth() {
+  currentDate.setMonth(currentDate.getMonth() - 1);
+  loadCalendar();
+}
+
+function nextMonth() {
+  currentDate.setMonth(currentDate.getMonth() + 1);
+  loadCalendar();
+}
+
+// Initialize
+loadCalendar();
+</script>
 
 </body>
 </html>
