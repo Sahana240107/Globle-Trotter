@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Build Itinerary | Globe Trotter</title>
+<link rel="stylesheet" href="itinerary.css" />
+</head>
+<body>
+
+
+<header class="topbar">
+<h1>🌍 Build Your Itinerary</h1>
+</header>
+
+
+<div class="container">
+
+
+<!-- LEFT PANEL: STOPS -->
+<div class="stops-panel">
+<h2>Trip Stops</h2>
+
+
+<div class="add-stop">
+<input id="cityName" placeholder="City name" />
+<input id="startDate" type="date" />
+<input id="endDate" type="date" />
+<button onclick="addStop()">➕ Add Stop</button>
+</div>
+
+
+<ul id="stopsList"></ul>
+</div>
+
+
+<!-- RIGHT PANEL: ACTIVITIES -->
+<div class="activities-panel">
+<h2 id="activityTitle">Select a city</h2>
+
+
+<div id="activityForm" class="hidden">
+<input id="activityName" placeholder="Activity name" />
+<input id="activityDate" type="date" />
+<input id="activityCost" type="number" placeholder="Cost" />
+<input id="activityDuration" type="number" placeholder="Duration (hrs)" />
+<button onclick="addActivity()">➕ Add Activity</button>
+</div>
+
+
+<ul id="activitiesList"></ul>
+</div>
+
+
+</div>
+
+
+<script src="itinerary.js"></script>
+</body>
+</html>

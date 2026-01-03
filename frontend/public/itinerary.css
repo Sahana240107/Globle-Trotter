@@ -1,0 +1,144 @@
+/* ===== Global Reset ===== */
+* {
+  box-sizing: border-box;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+body {
+  margin: 0;
+  background: radial-gradient(circle at top, #0f1a3a, #050814 70%);
+  color: #eaf0ff;
+}
+
+/* ===== Top Bar ===== */
+.topbar {
+  background: linear-gradient(90deg, #7d2cff, #7f62c4);
+  padding: 22px;
+  text-align: center;
+  box-shadow: 0 6px 30px rgba(0, 0, 0, 0.4);
+}
+
+.topbar h1 {
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+/* ===== Layout ===== */
+.container {
+  display: flex;
+  gap: 24px;
+  padding: 28px;
+}
+
+/* ===== Panels ===== */
+.stops-panel,
+.activities-panel {
+  flex: 1;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.08),
+    rgba(255, 255, 255, 0.03)
+  );
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05),
+              0 20px 50px rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(8px);
+}
+
+h2 {
+  margin-top: 0;
+  margin-bottom: 16px;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+/* ===== Inputs ===== */
+.add-stop input,
+#activityForm input {
+  width: 100%;
+  padding: 12px 14px;
+  margin-bottom: 12px;
+  border-radius: 10px;
+  border: none;
+  background: rgba(255, 255, 255, 0.95);
+  font-size: 0.95rem;
+}
+
+.add-stop input:focus,
+#activityForm input:focus {
+  outline: 2px solid #00c6ff;
+}
+
+/* ===== Buttons ===== */
+button {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #9661e5, #5f2cff);
+  color: #ffffff;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 8px 25px rgba(0, 198, 255, 0.35);
+}
+
+button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 35px rgba(95, 44, 255, 0.45);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+/* ===== Lists ===== */
+ul {
+  list-style: none;
+  padding: 0;
+  margin-top: 16px;
+}
+
+/* ===== Stop / Activity Cards ===== */
+li {
+  background: linear-gradient(
+    135deg,
+    rgba(0, 0, 0, 0.55),
+    rgba(0, 0, 0, 0.35)
+  );
+  padding: 14px 16px;
+  border-radius: 14px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04),
+              0 10px 30px rgba(0, 0, 0, 0.35);
+}
+
+li:hover {
+  transform: translateY(-2px);
+}
+
+/* ===== Selected Stop ===== */
+li.active {
+  border: 1px solid #5244bc;
+  box-shadow: 0 0 0 2px rgba(72, 76, 187, 0.25),
+              0 12px 40px rgba(0, 198, 255, 0.3);
+}
+
+/* ===== Small Helper Text ===== */
+.activities-panel p {
+  margin-top: 8px;
+  font-size: 0.9rem;
+  opacity: 0.75;
+}
+
+/* ===== Utility ===== */
+.hidden {
+  display: none;
+}

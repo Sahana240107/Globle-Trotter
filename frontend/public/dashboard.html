@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GlobalTrotter Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root {
+    --bg-primary: #0f2027;
+    --bg-secondary: #203a43;
+    --bg-gradient: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    --card-bg: rgba(255,255,255,0.1);
+    --card-hover: rgba(255,255,255,0.2);
+    --text-primary: #ffffff;
+    --text-secondary: #e0e6ed;
+    --accent: #00d4ff;
+    --accent-glow: rgba(0, 212, 255, 0.7);
+    --shadow: 0 8px 32px rgba(0,0,0,0.3);
+    --border: rgba(255,255,255,0.1);
+    --sort-bg: #2a2a2a;
+    --sort-hover: #3c3c3c;
+}
+
+[data-theme="light"] {
+    --bg-primary: #f8fafc;
+    --bg-secondary: #e2e8f0;
+    --bg-gradient: linear-gradient(135deg, #f1f5f9, #e2e8f0, #cbd5e1);
+    --card-bg: rgba(255,255,255,0.9);
+    --card-hover: rgba(255,255,255,1);
+    --text-primary: #1e293b;
+    --text-secondary: #475569;
+    --accent: #0ea5e9;
+    --accent-glow: rgba(14, 165, 233, 0.5);
+    --shadow: 0 8px 32px rgba(0,0,0,0.1);
+    --border: rgba(0,0,0,0.05);
+    --sort-bg: #4a4a4a;
+    --sort-hover: #5c5c5c;
+}
+
+* { box-sizing:border-box; margin:0; padding:0; }
+body { font-family:'Poppins',sans-serif; background:var(--bg-gradient); color:var(--text-primary); min-height:100vh; overflow-x:hidden; transition:all 0.4s ease; }
+
+/* Header */
+header { position:fixed; top:0; left:0; right:0; background:rgba(15,32,39,0.95); backdrop-filter:blur(20px); z-index:1000; padding:1rem 5%; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); animation:slideDown 0.8s ease; }
+@keyframes slideDown{from{transform:translateY(-100%);} to{transform:translateY(0);}}
+.logo{font-size:2rem; font-weight:700; background:linear-gradient(135deg,var(--accent),#00ff88); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; animation:logoFloat 6s ease-in-out infinite;}
+@keyframes logoFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
+.header-actions{display:flex; align-items:center; gap:1rem;}
+.profile-icon{width:45px; height:45px; border-radius:50%; background:var(--accent-glow); display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all 0.3s ease; box-shadow:var(--shadow);}
+.profile-icon:hover{transform: scale(1.1) rotate(360deg); box-shadow:0 0 20px var(--accent-glow);}
+.theme-toggle{position:relative; width:50px; height:30px; background:var(--card-bg); border-radius:20px; cursor:pointer; display:flex; align-items:center; padding:0 5px;}
+.theme-toggle input{display:none;}
+.theme-slider{position:absolute; top:3px; left:3px; width:24px; height:24px; border-radius:50%; background:var(--accent); display:flex; align-items:center; justify-content:center; font-size:12px; transition:all 0.4s ease;}
+.theme-toggle input:checked + .theme-slider{transform:translateX(20px);}
+.sun{color:#ffd700;} .moon{color:#fff;}
+
+/* Main */
+main{margin-top:80px; padding:2rem 5%;}
+
+/* Hero */
+.hero{height:60vh; position:relative; border-radius:20px; overflow:hidden; margin-bottom:3rem; box-shadow:var(--shadow);}
+.hero-track{display:flex; width:600%; height:100%; animation:heroSlide 70s linear infinite;}
+.hero-slide{width:16.666%; height:100%;}
+.hero-slide img{width:100%; height:100%; object-fit:cover;}
+@keyframes heroSlide{0%{transform:translateX(0);}100%{transform:translateX(-50%);}}
+
+.hero-text{
+    position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+    background: rgba(0,0,0,0.55); backdrop-filter:blur(12px);
+    padding:25px 40px; border-radius:22px;
+    display:flex; flex-direction:column; justify-content:center; align-items:center; gap:10px;
+    animation:heroFloat 4s ease-in-out infinite;
+    box-shadow:0 20px 40px rgba(0,0,0,0.5); z-index:10;
+}
+@keyframes heroFloat{0%{transform:translate(-50%,-50%) translateY(0);}50%{transform:translate(-50%,-50%) translateY(-10px);}100%{transform:translate(-50%,-50%) translateY(0);}}
+
+.hero-text-line {
+    display:flex; flex-direction:row; justify-content:center; align-items:center; gap:12px; flex-wrap:wrap;
+}
+.hero-text-line span{font-weight:700; font-size:2rem; color:var(--accent); text-shadow:0 0 8px var(--accent-glow); transition:all 0.3s ease;}
+.hero-text-line span:hover{text-shadow:0 0 15px var(--accent-glow); transform:scale(1.05);}
+.hero-subtitle{color:var(--text-secondary); font-size:1.2rem; opacity:0.9; text-align:center;}
+
+/* Search Section */
+.search-section{background:var(--card-bg); backdrop-filter:blur(10px); border-radius:20px; padding:2rem; margin-bottom:3rem; border:1px solid var(--border); box-shadow:var(--shadow);}
+.search-bar{width:100%; padding:1.2rem 1.5rem; border:none; border-radius:50px; font-size:1.1rem; background:rgba(255,255,255,0.2); color:var(--text-primary); margin-bottom:1rem; transition:all 0.3s ease;}
+.search-bar::placeholder{color: rgba(255,255,255,0.6);}
+[data-theme="light"] .search-bar{background: rgba(0,0,0,0.05); color:var(--text-primary);}
+[data-theme="light"] .search-bar::placeholder{color: rgba(0,0,0,0.5);}
+.search-bar:hover, .search-bar:focus{outline:none; box-shadow:0 0 15px var(--accent-glow); transform:scale(1.02);}
+
+.search-controls{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:1rem;}
+.control-btn{padding:0.8rem 1.2rem; border:none; border-radius:25px; background:var(--sort-bg); color:white; cursor:pointer; font-weight:500; transition:all 0.3s ease;}
+.control-btn:hover{background:var(--sort-hover); transform:translateY(-2px);}
+
+/* Sections */
+.section{margin-bottom:3rem;}
+.section-header{font-size:1.8rem; margin-bottom:1.5rem; display:flex; align-items:center; gap:0.5rem;}
+.grid{display:grid; gap:1.5rem;}
+.regional-grid{grid-template-columns:repeat(auto-fit,minmax(200px,1fr));}
+.trips-grid{grid-template-columns:repeat(auto-fit,minmax(300px,1fr));}
+
+/* Cards */
+.card{background:var(--card-bg); border-radius:20px; overflow:hidden; cursor:pointer; transition:all 0.4s ease; border:1px solid var(--border); backdrop-filter:blur(10px); position:relative;}
+.card::before{content:''; position:absolute; top:0; left:0; right:0; bottom:0; background:linear-gradient(135deg, transparent 0%, rgba(0,212,255,0.1) 100%); opacity:0; transition:opacity 0.3s ease; z-index:1;}
+.card:hover{transform:translateY(-12px) scale(1.02); box-shadow:0 25px 50px rgba(0,0,0,0.3);}
+.card:hover::before{opacity:1;}
+.card-img{width:100%; height:200px; object-fit:cover;}
+.trips-grid .card-img{height:250px;}
+.card-content{padding:1.5rem; position:relative; z-index:2;}
+.card-title{font-size:1.3rem; font-weight:700; margin-bottom:0.5rem; text-shadow:1px 1px 4px rgba(0,0,0,0.4); color:var(--text-primary);}
+[data-theme="light"] .card-title{color:#1e293b; text-shadow:1px 1px 2px rgba(255,255,255,0.3);}
+
+/* FAB */
+.fab{position:fixed; bottom:30px; right:30px; width:70px; height:70px; border-radius:50%; background:linear-gradient(135deg,var(--accent),#00ff88); border:none; font-size:1.5rem; color:white; cursor:pointer; box-shadow:0 10px 30px var(--accent-glow); transition:all 0.3s ease; z-index:1000; animation:fabPulse 2s infinite;}
+@keyframes fabPulse{0%{box-shadow:0 10px 30px var(--accent-glow);}50%{box-shadow:0 15px 40px var(--accent-glow);}100%{box-shadow:0 10px 30px var(--accent-glow);}}
+.fab:hover{transform:scale(1.15) rotate(90deg);}
+
+/* Responsive */
+@media(max-width:768px){.hero{height:40vh;} .hero-text{padding:15px 25px;} .hero-text-line span{font-size:1.5rem;}}
+@media(max-width:480px){.regional-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body data-theme="dark">
+
+<header>
+    <div class="logo">GlobalTrotter</div>
+    <div class="header-actions">
+        <label class="theme-toggle">
+            <input type="checkbox" id="theme-toggle">
+            <span class="theme-slider"><span class="sun">☀️</span><span class="moon">🌙</span></span>
+        </label>
+        <div class="profile-icon"><i class="fas fa-user"></i></div>
+    </div>
+</header>
+
+<main>
+    <!-- Hero -->
+    <section class="hero">
+        <div class="hero-track">
+            <div class="hero-slide"><img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"></div>
+            <div class="hero-slide"><img src="https://images.unsplash.com/photo-1501785888041-af3ef285b470?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"></div>
+            <div class="hero-slide"><img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"></div>
+            <div class="hero-slide"><img src="https://images.unsplash.com/photo-1501785888041-af3ef285b470?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"></div>
+        </div>
+        <div class="hero-text">
+            <div class="hero-text-line">
+                <span>Plan</span> • <span>Explore</span> • <span>Experience</span>
+            </div>
+            <div class="hero-subtitle">Your personal travel companion</div>
+        </div>
+    </section>
+
+<!-- Search Section and other contents remain unchanged -->
+<section class="search-section">
+<input type="text" class="search-bar" placeholder="Where do you want to go? Search destinations, trips...">
+<div class="search-controls">
+<button class="control-btn"><i class="fas fa-th"></i> Group By</button>
+<button class="control-btn"><i class="fas fa-filter"></i> Filter</button>
+<select class="control-btn">
+<option>Sort by: Popularity</option>
+<option>Sort by: Price</option>
+<option>Sort by: Date</option>
+</select>
+</div>
+</section>
+
+<!-- Top Regional Selections -->
+<section class="section">
+<h2 class="section-header"><i class="fas fa-globe"></i> Top Regional Selections</h2>
+<div class="grid regional-grid">
+<div class="card"><img src="https://www.ilxtravel.com/wp-content/uploads/2024/09/Eiffel-Tower-France-1024x682.webp?s=612x612&w=0&k=20&c=rdy3aU1CDyh66mPyR5AAc1yJ0yEameR_v2vOXp2uuMM=?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" class="card-img"><div class="card-content"><h3 class="card-title">FRANCE</h3></div></div>
+<div class="card"><img src="https://t4.ftcdn.net/jpg/00/60/83/31/360_F_60833119_JHw5sOMfRwFrxuZyHHIxPxFWcu9Dep3n.jpg?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" class="card-img"><div class="card-content"><h3 class="card-title">CHINA</h3></div></div>
+<div class="card"><img src="https://www.indiasinvitation.com/wp-content/uploads/2019/11/India-Tours-and-Travel-Destinations.webp?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" class="card-img"><div class="card-content"><h3 class="card-title">INDIA</h3></div></div>
+<div class="card"><img src="https://viajes.chavetas.es/wp-content/uploads/2019/09/destacadarutasencocheestadosunidos.jpg?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" class="card-img"><div class="card-content"><h3 class="card-title">AMERICA</h3></div></div>
+<div class="card"><img src="https://www.wandering-bird.com/wp-content/uploads/2019/08/where-to-see-northern-lights-europe.jpg?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" class="card-img"><div class="card-content"><h3 class="card-title">EUROPE</h3></div></div>
+</div>
+</section>
+
+<!-- Previous Trips -->
+<section class="section">
+<h2 class="section-header"><i class="fas fa-history"></i> Previous Trips</h2>
+<div class="grid trips-grid">
+<div class="card"><img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" class="card-img"><div class="card-content"><h3 class="card-title">Paris Adventure</h3><p>July 2025 • 5 days</p></div></div>
+<div class="card"><img src="https://images.unsplash.com/photo-1540979388789-6cee28a1cdc9?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" class="card-img"><div class="card-content"><h3 class="card-title">Tokyo Lights</h3><p>March 2025 • 7 days</p></div></div>
+<div class="card"><img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" class="card-img"><div class="card-content"><h3 class="card-title">Maldives Escape</h3><p>December 2025 • 4 days</p></div></div>
+</div>
+</section>
+</main>
+
+<button class="fab"><i class="fas fa-plus"></i></button>
+
+<script>
+const toggle=document.getElementById('theme-toggle'); 
+const body=document.body; 
+const currentTheme=localStorage.getItem('theme');
+if(currentTheme==='light'||(!currentTheme && window.matchMedia('(prefers-color-scheme: light)').matches)){
+    body.setAttribute('data-theme','light'); toggle.checked=true;
+}
+toggle.addEventListener('change',()=>{
+    if(toggle.checked){body.setAttribute('data-theme','light'); localStorage.setItem('theme','light');}
+    else{body.setAttribute('data-theme','dark'); localStorage.setItem('theme','dark');}
+});
+</script>
+
+</body>
+</html>

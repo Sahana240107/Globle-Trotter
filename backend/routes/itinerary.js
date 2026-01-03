@@ -13,14 +13,19 @@ router.post('/add-stop', (req, res) => {
   }
 
   db.query(
-    'INSERT INTO stops (trip_id, city_name, start_date, end_date) VALUES (?,?,?,?)',
-    [trip_id, city_name, start_date, end_date],
-    (err) => {
+    `INSERT INTO stops (trip_id, city_name, start_date, end_date)
+     VALUES (?,?,?,?)`,
+    [trip_id, city_name, start_date || null, end_date || null],
+    (err, result) => {
       if (err) {
+        console.error(err);
         return res.status(500).json({ message: 'Database error' });
       }
 
-      res.json({ message: 'Stop added' });
+      res.json({
+        message: 'Stop added successfully',
+        stop_id: result.insertId
+      });
     }
   );
 });
@@ -29,21 +34,39 @@ router.post('/add-stop', (req, res) => {
  * Add an activity to a stop
  */
 router.post('/add-activity', (req, res) => {
-  const { stop_id, activity_name, cost } = req.body;
+  const {
+    stop_id,
+    activity_name,
+    activity_date,
+    cost,
+    duration_hours
+  } = req.body;
 
-  if (!stop_id || !activity_name || cost == null) {
+  if (!stop_id || !activity_name) {
     return res.status(400).json({ message: 'Missing required fields' });
   }
 
   db.query(
-    'INSERT INTO activities (stop_id, activity_name, cost) VALUES (?,?,?)',
-    [stop_id, activity_name, cost],
-    (err) => {
+    `INSERT INTO activities
+     (stop_id, activity_name, activity_date, cost, duration_hours)
+     VALUES (?,?,?,?,?)`,
+    [
+      stop_id,
+      activity_name,
+      activity_date || null,
+      cost || 0,
+      duration_hours || null
+    ],
+    (err, result) => {
       if (err) {
+        console.error(err);
         return res.status(500).json({ message: 'Database error' });
       }
 
-      res.json({ message: 'Activity added' });
+      res.json({
+        message: 'Activity added successfully',
+        activity_id: result.insertId
+      });
     }
   );
 });
@@ -61,6 +84,7 @@ router.get('/budget/:tripId', (req, res) => {
     [req.params.tripId],
     (err, result) => {
       if (err) {
+        console.error(err);
         return res.status(500).json({ message: 'Database error' });
       }
 
