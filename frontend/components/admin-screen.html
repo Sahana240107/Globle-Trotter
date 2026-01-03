@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GlobalTrotter - Admin Panel</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            /* PREMIUM BACKGROUND: Multi-layer gradient with subtle pattern */
+            background: 
+                linear-gradient(135deg, #0f0f23 0%, #1a1a3e 30%, #2d1b69 60%, #4a148c 100%),
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 118, 117, 0.2) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.15) 0%, transparent 50%);
+            min-height: 100vh;
+            color: #fff;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 25% 25%, rgba(255,255,255,0.05) 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, rgba(255,255,255,0.03) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .header {
+            background: rgba(15, 15, 35, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 30px rgba(0,0,0,0.3);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            color: #fff;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, #d0d3d2, #faf9f7, #f0e6e6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .search-container {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            flex: 1;
+            max-width: 600px;
+            margin: 0 2rem;
+        }
+
+        .search-bar {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 25px;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s ease;
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            backdrop-filter: blur(10px);
+        }
+
+        .search-bar::placeholder {
+            color: rgba(255,255,255,0.7);
+        }
+
+        .search-bar:focus {
+            border-color: #a8e6cf;
+            box-shadow: 0 0 0 3px rgba(168, 230, 207, 0.3);
+            background: rgba(255,255,255,0.15);
+        }
+
+        .filters-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .filter-btn {
+            padding: 0.75rem 1rem;
+            border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 20px;
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            border-color: #a8e6cf;
+            background: rgba(168, 230, 207, 0.2);
+            box-shadow: 0 0 20px rgba(168, 230, 207, 0.3);
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background: rgba(15, 15, 35, 0.95);
+            min-width: 200px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+            border-radius: 12px;
+            z-index: 1000;
+            top: 100%;
+            left: 0;
+            border: 1px solid rgba(255,255,255,0.1);
+            max-height: 300px;
+            overflow-y: auto;
+            backdrop-filter: blur(20px);
+            color: #fff;
+        }
+
+        .dropdown-content.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .dropdown-item {
+            padding: 1rem;
+            cursor: pointer;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.2s ease;
+            color: rgba(255,255,255,0.9);
+        }
+
+        .dropdown-item:hover {
+            background: rgba(168, 230, 207, 0.2);
+        }
+
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-item.selected {
+            background: rgba(168, 230, 207, 0.3);
+            color: #a8e6cf;
+        }
+
+        .user-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #a8e6cf, #ffd93d);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1a1a3e;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(168, 230, 207, 0.4);
+        }
+
+        .tabs {
+            background: rgba(15, 15, 35, 0.9);
+            backdrop-filter: blur(20px);
+            padding: 1rem 2rem;
+            display: flex;
+            gap: 0.5rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            background: rgba(255,255,255,0.1);
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            white-space: nowrap;
+            color: rgba(255,255,255,0.9);
+            border: 2px solid rgba(255,255,255,0.1);
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(45deg, #a8e6cf, #ffd93d);
+            color: #1a1a3e;
+            box-shadow: 0 4px 20px rgba(168, 230, 207, 0.4);
+        }
+
+        .dashboard {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* UPDATED: 2x2 Grid for Analytics (Top 2 boxes, Bottom 2 boxes) */
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: auto auto;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            height: 500px;
+        }
+
+        .analytics-grid .compact-chart-card {
+            height: 240px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .charts-grid, .cities-grid, .trends-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .compact-chart-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
+            color: #fff;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .compact-chart-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(168, 230, 207, 0.5), transparent);
+        }
+
+        .compact-chart-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+
+        .chart-card, .city-card, .trend-card, .summary-card, .user-table {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
+            color: #fff;
+        }
+
+        .chart-card:hover, .city-card:hover, .trend-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+
+        .chart-title, .section-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: rgba(255,255,255,0.95);
+        }
+
+        .compact-chart-container {
+            height: 160px !important;
+            position: relative;
+            flex: 1;
+        }
+
+        .chart-container {
+            height: 300px;
+            position: relative;
+        }
+
+        .city-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .city-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            background: linear-gradient(45deg, #a8e6cf, #ffd93d);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1a1a3e;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .city-stats h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.25rem;
+            color: #fff;
+        }
+
+        .city-stats .visits {
+            color: #a8e6cf;
+            font-weight: bold;
+            font-size: 1.8rem;
+        }
+
+        .trend-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .trend-item:last-child {
+            border-bottom: none;
+        }
+
+        .trend-label {
+            font-weight: 500;
+            color: rgba(255,255,255,0.9);
+        }
+
+        .trend-value {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #ffd93d;
+        }
+
+        .user-table {
+            overflow-x: auto;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(20px);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            color: #fff;
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        th {
+            background: rgba(255,255,255,0.05);
+            font-weight: 600;
+            color: rgba(255,255,255,0.95);
+        }
+
+        .status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status.active { 
+            background: rgba(76, 175, 80, 0.3); 
+            color: #a8e6cf; 
+        }
+        .status.inactive { 
+            background: rgba(244, 67, 54, 0.3); 
+            color: #ff6b6b; 
+        }
+
+        .summary-list {
+            list-style: none;
+        }
+
+        .summary-item {
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .summary-item:last-child {
+            border-bottom: none;
+        }
+
+        .summary-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #ffd93d;
+        }
+
+        @media (max-width: 768px) {
+            .analytics-grid {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto auto auto;
+                height: auto;
+            }
+            
+            .header {
+                padding: 1rem;
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .search-container {
+                margin: 0;
+                order: 3;
+                width: 100%;
+            }
+            
+            .tabs {
+                padding: 1rem;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- [Rest of HTML remains exactly the same] -->
+    <div class="header">
+        <div class="logo">GlobalTrotter</div>
+        <div class="search-container">
+            <input type="text" class="search-bar" placeholder="Search users, cities, activities..." id="searchInput">
+            
+            <div class="filters-dropdown">
+                <button class="filter-btn" id="groupBtn">
+                    <span>👥 Group by</span>
+                </button>
+                <div class="dropdown-content" id="groupDropdown">
+                    <div class="dropdown-item selected" data-group="all">All Users</div>
+                    <div class="dropdown-item" data-group="age">Age Group</div>
+                    <div class="dropdown-item" data-group="location">Location</div>
+                    <div class="dropdown-item" data-group="activity">Activity Type</div>
+                </div>
+            </div>
+
+            <div class="filters-dropdown">
+                <button class="filter-btn" id="filterBtn">
+                    <span>🔧 Filter</span>
+                </button>
+                <div class="dropdown-content" id="filterDropdown">
+                    <div class="dropdown-item selected" data-filter="all">All Status</div>
+                    <div class="dropdown-item" data-filter="active">Active Only</div>
+                    <div class="dropdown-item" data-filter="inactive">Inactive Only</div>
+                </div>
+            </div>
+
+            <div class="filters-dropdown">
+                <button class="filter-btn" id="sortBtn">
+                    <span>📊 Sort by</span>
+                </button>
+                <div class="dropdown-content" id="sortDropdown">
+                    <div class="dropdown-item" data-sort="recent">Most Recent</div>
+                    <div class="dropdown-item selected" data-sort="trips">Most Trips</div>
+                    <div class="dropdown-item" data-sort="spending">Highest Spending</div>
+                    <div class="dropdown-item" data-sort="rating">Top Rated</div>
+                </div>
+            </div>
+        </div>
+        <div class="user-icon">AD</div>
+    </div>
+
+    <div class="tabs">
+        <button class="tab-btn active" data-tab="analytics">📈 Trends & Analytics</button>
+        <button class="tab-btn" data-tab="users">👥 Manage Users</button>
+        <button class="tab-btn" data-tab="cities">🏙️ Popular Cities</button>
+        <button class="tab-btn" data-tab="activities">🎯 Popular Activities</button>
+    </div>
+
+    <div class="dashboard">
+        <!-- UPDATED: 2x2 Grid Analytics -->
+        <div id="analytics-tab" class="tab-content active">
+            <div class="analytics-grid">
+                <!-- Top Row - Left -->
+                <div class="compact-chart-card">
+                    <div class="chart-title">User Engagement</div>
+                    <canvas id="engagementChart" class="compact-chart-container"></canvas>
+                </div>
+                
+                <!-- Top Row - Right -->
+                <div class="compact-chart-card">
+                    <div class="chart-title">Travel Frequency</div>
+                    <canvas id="frequencyChart" class="compact-chart-container"></canvas>
+                </div>
+                
+                <!-- Bottom Row - Left -->
+                <div class="compact-chart-card">
+                    <div class="chart-title">Conversion Rate</div>
+                    <canvas id="conversionChart" class="compact-chart-container"></canvas>
+                </div>
+                
+                <!-- Bottom Row - Right (Key Metrics) -->
+                <div class="compact-chart-card">
+                    <div class="chart-title">Key Metrics</div>
+                    <ul class="summary-list" style="font-size: 0.9rem;">
+                        <li class="summary-item" style="padding: 0.5rem 0;">
+                            <span>DAU</span>
+                            <span class="summary-value" style="font-size: 1.2rem;">18.2K</span>
+                        </li>
+                        <li class="summary-item" style="padding: 0.5rem 0;">
+                            <span>Repeat</span>
+                            <span class="summary-value" style="font-size: 1.2rem;">67%</span>
+                        </li>
+                        <li class="summary-item" style="padding: 0.5rem 0;">
+                            <span>Avg Trips</span>
+                            <span class="summary-value" style="font-size: 1.2rem;">3.8</span>
+                        </li>
+                        <li class="summary-item" style="padding: 0.5rem 0;">
+                            <span>Churn</span>
+                            <span class="summary-value" style="font-size: 1.2rem;">4.2%</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- [Rest of tabs remain the same] -->
+        <div id="users-tab" class="tab-content">
+            <div class="user-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Email</th>
+                            <th>Trips</th>
+                            <th>Status</th>
+                            <th>Last Active</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTable">
+                        <!-- Dynamic content -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="cities-tab" class="tab-content">
+            <div class="cities-grid">
+                <div class="city-card">
+                    <div class="section-title">Paris, France</div>
+                    <div class="city-info">
+                        <div class="city-icon">🗼</div>
+                        <div class="city-stats">
+                            <h3>Paris</h3>
+                            <div class="visits">1,250 visits</div>
+                            <div>+18% from last month</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="city-card">
+                    <div class="section-title">Tokyo, Japan</div>
+                    <div class="city-info">
+                        <div class="city-icon">🗼</div>
+                        <div class="city-stats">
+                            <h3>Tokyo</h3>
+                            <div class="visits">980 visits</div>
+                            <div>+25% from last month</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="city-card">
+                    <div class="section-title">New York, USA</div>
+                    <div class="city-info">
+                        <div class="city-icon">🗽</div>
+                        <div class="city-stats">
+                            <h3>New York</h3>
+                            <div class="visits">850 visits</div>
+                            <div>+12% from last month</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="activities-tab" class="tab-content">
+            <div class="trends-grid">
+                <div class="trend-card">
+                    <div class="section-title">Sightseeing Tours</div>
+                    <div class="trend-item">
+                        <span class="trend-label">Total Bookings</span>
+                        <span class="trend-value">2,450</span>
+                    </div>
+                    <div class="trend-item">
+                        <span class="trend-label">Avg Rating</span>
+                        <span class="trend-value">4.8⭐</span>
+                    </div>
+                </div>
+                <div class="trend-card">
+                    <div class="section-title">Food Experiences</div>
+                    <div class="trend-item">
+                        <span class="trend-label">Total Bookings</span>
+                        <span class="trend-value">1,980</span>
+                    </div>
+                    <div class="trend-item">
+                        <span class="trend-label">Avg Rating</span>
+                        <span class="trend-value">4.9⭐</span>
+                    </div>
+                </div>
+                <div class="trend-card">
+                    <div class="section-title">Adventure Sports</div>
+                    <div class="trend-item">
+                        <span class="trend-label">Total Bookings</span>
+                        <span class="trend-value">1,230</span>
+                    </div>
+                    <div class="trend-item">
+                        <span class="trend-label">Avg Rating</span>
+                        <span class="trend-value">4.7⭐</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // [JavaScript remains exactly the same as original]
+        const usersData = [
+            { name: 'John Doe', email: 'john@example.com', trips: 12, status: 'active', lastActive: '2 days ago' },
+            { name: 'Jane Smith', email: 'jane@example.com', trips: 8, status: 'active', lastActive: '1 day ago' },
+            { name: 'Mike Johnson', email: 'mike@example.com', trips: 25, status: 'inactive', lastActive: '10 days ago' },
+            { name: 'Sarah Wilson', email: 'sarah@example.com', trips: 15, status: 'active', lastActive: '3 hours ago' }
+        ];
+
+        const engagementCtx = document.getElementById('engagementChart').getContext('2d');
+        new Chart(engagementCtx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                datasets: [{
+                    label: 'Sessions',
+                    data: [45000, 52000, 61000, 72000, 85000, 92000],
+                    borderColor: '#a8e6cf',
+                    backgroundColor: 'rgba(168, 230, 207, 0.2)',
+                    tension: 0.4,
+                    fill: true,
+                    borderWidth: 2
+                }]
+            },
+            options: { 
+                responsive: true, 
+                maintainAspectRatio: false,
+                scales: { 
+                    x: { 
+                        ticks: { 
+                            font: { size: 10, family: "'Segoe UI', sans-serif" },
+                            color: 'rgba(255,255,255,0.8)'
+                        },
+                        grid: { color: 'rgba(255,255,255,0.1)' }
+                    },
+                    y: { 
+                        beginAtZero: true, 
+                        ticks: { 
+                            font: { size: 10, family: "'Segoe UI', sans-serif" },
+                            color: 'rgba(255,255,255,0.8)'
+                        },
+                        grid: { color: 'rgba(255,255,255,0.1)' }
+                    }
+                },
+                plugins: { 
+                    legend: { display: false },
+                    tooltip: { 
+                        backgroundColor: 'rgba(15,15,35,0.95)',
+                        titleColor: '#fff',
+                        bodyColor: '#fff',
+                        borderColor: '#a8e6cf',
+                        borderWidth: 1
+                    }
+                }
+            }
+        });
+
+        const frequencyCtx = document.getElementById('frequencyChart').getContext('2d');
+        new Chart(frequencyCtx, {
+            type: 'bar',
+            data: {
+                labels: ['1', '2-3', '4-6', '7+'],
+                datasets: [{
+                    label: 'Users',
+                    data: [28, 42, 21, 9],
+                    backgroundColor: ['#a8e6cf', '#ffd93d', '#ff6b6b', '#4ecdc4'],
+                    borderRadius: 6
+                }]
+            },
+            options: { 
+                responsive: true, 
+                maintainAspectRatio: false,
+                scales: { 
+                    y: { 
+                        beginAtZero: true, 
+                        ticks: { 
+                            font: { size: 10 },
+                            color: 'rgba(255,255,255,0.8)'
+                        },
+                        grid: { color: 'rgba(255,255,255,0.1)' }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: 'rgba(255,255,255,0.8)' }
+                    }
+                },
+                plugins: { 
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(15,15,35,0.95)',
+                        titleColor: '#fff',
+                        bodyColor: '#fff'
+                    }
+                }
+            }
+        });
+
+        const conversionCtx = document.getElementById('conversionChart').getContext('2d');
+        new Chart(conversionCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Done', 'Failed', 'Pending'],
+                datasets: [{
+                    data: [68, 22, 10],
+                    backgroundColor: ['#a8e6cf', '#ff6b6b', '#ffd93d'],
+                    borderWidth: 0
+                }]
+            },
+            options: { 
+                responsive: true, 
+                maintainAspectRatio: false,
+                plugins: { 
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(15,15,35,0.95)',
+                        titleColor: '#fff',
+                        bodyColor: '#fff'
+                    }
+                }
+            }
+        });
+
+        // [Rest of JavaScript remains exactly the same]
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tab = btn.dataset.tab;
+                
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+                document.getElementById(tab + '-tab').classList.add('active');
+                
+                if (tab === 'users') {
+                    loadUsersTable();
+                }
+            });
+        });
+
+        function setupDropdown(dropdownId, btnId, callback) {
+            const btn = document.getElementById(btnId);
+            const dropdown = document.getElementById(dropdownId);
+            
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                dropdown.classList.toggle('show');
+            });
+
+            document.querySelectorAll(`#${dropdownId} .dropdown-item`).forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    document.querySelectorAll(`#${dropdownId} .dropdown-item`).forEach(i => i.classList.remove('selected'));
+                    item.classList.add('selected');
+                    btn.innerHTML = `<span>${item.textContent}</span>`;
+                    dropdown.classList.remove('show');
+                    callback(item.dataset);
+                });
+            });
+
+            document.addEventListener('click', () => dropdown.classList.remove('show'));
+        }
+
+        setupDropdown('groupDropdown', 'groupBtn', (data) => {
+            console.log('Grouped by:', data.group);
+        });
+
+        setupDropdown('filterDropdown', 'filterBtn', (data) => {
+            console.log('Filtered by:', data.filter);
+        });
+
+        setupDropdown('sortDropdown', 'sortBtn', (data) => {
+            console.log('Sorted by:', data.sort);
+            loadUsersTable();
+        });
+
+        function loadUsersTable() {
+            const tbody = document.getElementById('usersTable');
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            
+            tbody.innerHTML = usersData
+                .filter(user => 
+                    user.name.toLowerCase().includes(searchTerm) || 
+                    user.email.toLowerCase().includes(searchTerm)
+                )
+                .map(user => `
+                    <tr>
+                    <td>${user.name}</td>
+                    <td>${user.email}</td>
+                    <td>${user.trips}</td>
+                    <td><span class="status ${user.status}">${user.status.toUpperCase()}</span></td>
+                    <td>${user.lastActive}</td>
+                    </tr>
+                `).join('');
+        }
+
+        document.getElementById('searchInput').addEventListener('input', loadUsersTable);
+        loadUsersTable();
+    </script>
+</body>
+</html>
