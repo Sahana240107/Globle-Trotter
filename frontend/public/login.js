@@ -26,10 +26,14 @@ async function login() {
       return;
     }
 
+    // Store token
     localStorage.setItem("token", data.token);
-    alert("Login successful!");
+
+    // Redirect to dashboard
+    window.location.href = "dashboard.html";
 
   } catch (err) {
     errorEl.textContent = "Server not reachable";
+    console.error(err);
   }
 }

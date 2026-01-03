@@ -60,7 +60,7 @@ async function registerUser() {
 
   try {
     const response = await fetch(
-      "http://localhost:5000/api/auth/register",
+      "http://localhost:5000/auth/register",  // ✅ Corrected URL
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -76,7 +76,7 @@ async function registerUser() {
     }
 
     alert("Registration successful");
-    window.location.href = "index.html";
+    window.location.href = "login.html";
 
   } catch (error) {
     alert("Backend not reachable");
@@ -84,7 +84,6 @@ async function registerUser() {
   }
 }
 </script>
-
 
 </body>
 </html>
