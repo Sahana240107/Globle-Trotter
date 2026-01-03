@@ -1,51 +1,95 @@
+* {
+box-sizing: border-box;
+font-family: 'Segoe UI', sans-serif;
+}
+
+
 body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: linear-gradient(135deg, #1e3c72, #2a5298);
-  color: #fff;
+margin: 0;
+background: #0b1020;
+color: #fff;
 }
 
-header {
-  padding: 15px 30px;
-  font-size: 20px;
+
+.topbar {
+background: linear-gradient(90deg, #5f2cff, #00c6ff);
+padding: 20px;
+text-align: center;
 }
 
-main {
-  padding: 20px;
+
+.container {
+display: flex;
+padding: 20px;
+gap: 20px;
 }
 
-.stop {
-  background: rgba(255,255,255,0.15);
-  padding: 15px;
-  border-radius: 12px;
-  margin-bottom: 20px;
+
+.stops-panel, .activities-panel {
+flex: 1;
+background: rgba(255,255,255,0.08);
+border-radius: 12px;
+padding: 20px;
 }
 
-.stop-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+
+h2 {
+margin-top: 0;
 }
 
-input, button {
-  padding: 8px;
-  margin: 5px 0;
-  border-radius: 6px;
-  border: none;
+
+.add-stop input, #activityForm input {
+width: 100%;
+padding: 10px;
+margin-bottom: 10px;
+border-radius: 6px;
+border: none;
 }
 
-.activities {
-  margin-top: 10px;
-  padding-left: 10px;
+
+button {
+width: 100%;
+padding: 10px;
+border: none;
+border-radius: 6px;
+background: linear-gradient(135deg, #00c6ff, #5f2cff);
+color: white;
+font-weight: bold;
+cursor: pointer;
 }
 
-.activity {
-  background: rgba(0,0,0,0.2);
-  padding: 10px;
-  border-radius: 8px;
-  margin-top: 8px;
+
+button:hover {
+opacity: 0.9;
 }
 
-.control-btn {
-  margin-left: 5px;
+
+ul {
+list-style: none;
+padding: 0;
+}
+
+
+li {
+background: rgba(0,0,0,0.4);
+padding: 10px;
+border-radius: 8px;
+margin-bottom: 10px;
+cursor: pointer;
+}
+
+
+li.active {
+outline: 2px solid #00c6ff;
+}
+
+
+.stop-actions {
+display: flex;
+gap: 5px;
+margin-top: 5px;
+}
+
+.hidden {
+display: none;
 }

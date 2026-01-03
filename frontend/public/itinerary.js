@@ -1,92 +1,73 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const stopsContainer = document.getElementById("stopsContainer");
-  const addStopBtn = document.getElementById("addStopBtn");
+const params = new URLSearchParams(window.location.search);
+const start = document.getElementById('startDate').value;
+const end = document.getElementById('endDate').value;
 
-  addStopBtn.addEventListener("click", addStop);
 
-  function addStop() {
-    const stopDiv = document.createElement("div");
-    stopDiv.className = "stop";
+fetch('http://localhost:5000/itinerary/add-stop', {
+method: 'POST',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify({
+trip_id: tripId,
+city_name: city,
+start_date: start,
+end_date: end
+})
+})
+.then(res => res.json())
+.then(data => {
+const li = document.createElement('li');
+li.innerHTML = `<strong>${city}</strong><br>${start} → ${end}`;
+li.onclick = () => selectStop(li, data.stop_id, city);
+stopsList.appendChild(li);
 
-    stopDiv.innerHTML = `
-      <div class="stop-header">
-        <h3>Stop</h3>
-        <div>
-          <button class="moveUp">⬆</button>
-          <button class="moveDown">⬇</button>
-        </div>
-      </div>
 
-      <input type="text" placeholder="City Name">
-      <input type="date">
-      <input type="date">
-
-      <button class="saveStop">Save Stop</button>
-
-      <div class="activities"></div>
-      <button class="addActivity">+ Add Activity</button>
-    `;
-
-    // Reorder
-    stopDiv.querySelector(".moveUp").onclick = () => {
-      if (stopDiv.previousElementSibling)
-        stopsContainer.insertBefore(stopDiv, stopDiv.previousElementSibling);
-    };
-
-    stopDiv.querySelector(".moveDown").onclick = () => {
-      if (stopDiv.nextElementSibling)
-        stopsContainer.insertBefore(stopDiv.nextElementSibling, stopDiv);
-    };
-
-    // Save Stop
-    stopDiv.querySelector(".saveStop").onclick = async () => {
-      const inputs = stopDiv.querySelectorAll("input");
-      const res = await fetch("http://localhost:5000/stops", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          trip_id: 1,
-          city_name: inputs[0].value,
-          start_date: inputs[1].value,
-          end_date: inputs[2].value
-        })
-      });
-      const data = await res.json();
-      stopDiv.dataset.stopId = data.stop_id;
-      alert("Stop saved");
-    };
-
-    // Add Activity
-    stopDiv.querySelector(".addActivity").onclick = () => {
-      const actDiv = document.createElement("div");
-      actDiv.className = "activity";
-      actDiv.innerHTML = `
-        <input placeholder="Activity Name">
-        <input type="date">
-        <input placeholder="Cost">
-        <input placeholder="Duration (hrs)">
-        <button class="saveActivity">Save Activity</button>
-      `;
-
-      actDiv.querySelector(".saveActivity").onclick = async () => {
-        const i = actDiv.querySelectorAll("input");
-        await fetch("http://localhost:5000/activities", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            stop_id: stopDiv.dataset.stopId,
-            activity_name: i[0].value,
-            activity_date: i[1].value,
-            cost: i[2].value,
-            duration_hours: i[3].value
-          })
-        });
-        alert("Activity saved");
-      };
-
-      stopDiv.querySelector(".activities").appendChild(actDiv);
-    };
-
-    stopsContainer.appendChild(stopDiv);
-  }
+document.getElementById('cityName').value = '';
+document.getElementById('startDate').value = '';
+document.getElementById('endDate').value = '';
 });
+
+
+
+function selectStop(element, stopId, city) {
+document.querySelectorAll('#stopsList li').forEach(li => li.classList.remove('active'));
+element.classList.add('active');
+
+
+selectedStopId = stopId;
+activityTitle.textContent = `Activities in ${city}`;
+activityForm.classList.remove('hidden');
+activitiesList.innerHTML = '';
+}
+
+
+function addActivity() {
+const name = document.getElementById('activityName').value;
+const date = document.getElementById('activityDate').value;
+const cost = document.getElementById('activityCost').value;
+const duration = document.getElementById('activityDuration').value;
+
+
+fetch('http://localhost:5000/itinerary/add-activity', {
+method: 'POST',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify({
+stop_id: selectedStopId,
+activity_name: name,
+activity_date: date,
+cost: cost,
+duration_hours: duration
+})
+})
+.then(res => res.json())
+.then(() => {
+const li = document.createElement('li');
+li.innerHTML = `${date} • <strong>${name}</strong> — ₹${cost} (${duration}h)`;
+activitiesList.appendChild(li);
+
+
+document.getElementById('activityName').value = '';
+document.getElementById('activityDate').value = '';
+document.getElementById('activityCost').value = '';
+document.getElementById('activityDuration').value = '';
+});
+}
