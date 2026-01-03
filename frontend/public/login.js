@@ -26,14 +26,8 @@ async function login() {
       return;
     }
 
-    // ✅ Save token
     localStorage.setItem("token", data.token);
-
     alert("Login successful!");
-    console.log("JWT Token:", data.token);
-
-    // later redirect
-    // window.location.href = "dashboard.html";
 
   } catch (err) {
     errorEl.textContent = "Server not reachable";
