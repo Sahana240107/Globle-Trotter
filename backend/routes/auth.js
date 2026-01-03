@@ -32,4 +32,41 @@ router.post('/login', (req, res) => {
   );
 });
 
+router.post('/register', (req, res) => {
+  const {
+    first_name,
+    last_name,
+    email,
+    phone,
+    city,
+    country,
+    password
+  } = req.body;
+
+  if (!email || !password || !first_name) {
+    return res.status(400).json({ message: 'Missing required fields' });
+  }
+
+  db.query(
+    `INSERT INTO users
+     (first_name, last_name, email, phone, city, country, password)
+     VALUES (?,?,?,?,?,?,?)`,
+    [first_name, last_name, email, phone, city, country, password],
+    (err, result) => {
+      if (err) {
+        if (err.code === 'ER_DUP_ENTRY') {
+          return res.status(409).json({ message: 'Email already exists' });
+        }
+        return res.status(500).json({ message: 'Database error' });
+      }
+
+      res.json({
+        message: 'User registered successfully',
+        userId: result.insertId
+      });
+    }
+  );
+});
+
+
 module.exports = router;
