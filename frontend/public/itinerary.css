@@ -1,34 +1,51 @@
 body {
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  margin: 0;
   font-family: Arial, sans-serif;
-  color: white;
+  background: linear-gradient(135deg, #1e3c72, #2a5298);
+  color: #fff;
+}
+
+header {
+  padding: 15px 30px;
+  font-size: 20px;
+}
+
+main {
   padding: 20px;
-}
-
-.title {
-  text-align: center;
-}
-
-#addStopBtn {
-  display: block;
-  margin: 20px auto;
-  padding: 12px 20px;
-  font-size: 16px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
 }
 
 .stop {
   background: rgba(255,255,255,0.15);
   padding: 15px;
-  border-radius: 10px;
-  margin-bottom: 15px;
+  border-radius: 12px;
+  margin-bottom: 20px;
 }
 
-.stop input {
+.stop-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+input, button {
   padding: 8px;
-  margin: 5px;
+  margin: 5px 0;
   border-radius: 6px;
   border: none;
+}
+
+.activities {
+  margin-top: 10px;
+  padding-left: 10px;
+}
+
+.activity {
+  background: rgba(0,0,0,0.2);
+  padding: 10px;
+  border-radius: 8px;
+  margin-top: 8px;
+}
+
+.control-btn {
+  margin-left: 5px;
 }
