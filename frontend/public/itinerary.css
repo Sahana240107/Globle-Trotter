@@ -1,21 +1,29 @@
 body {
-  margin: 0;
-  font-family: Poppins, sans-serif;
-  background: linear-gradient(135deg,#667eea,#764ba2);
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  font-family: Arial, sans-serif;
   color: white;
+  padding: 20px;
 }
 
-header {
-  padding: 20px;
+.title {
   text-align: center;
+}
+
+#addStopBtn {
+  display: block;
+  margin: 20px auto;
+  padding: 12px 20px;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
 }
 
 .stop {
   background: rgba(255,255,255,0.15);
-  margin: 20px auto;
-  padding: 20px;
-  border-radius: 12px;
-  max-width: 800px;
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 15px;
 }
 
 .stop input {
@@ -23,21 +31,4 @@ header {
   margin: 5px;
   border-radius: 6px;
   border: none;
-}
-
-.activity {
-  display: flex;
-  gap: 10px;
-  margin-top: 10px;
-}
-
-button {
-  padding: 10px;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-}
-
-.reorder {
-  float: right;
 }
