@@ -14,15 +14,16 @@ router.post('/create', (req, res) => {
 
   db.query(
     'INSERT INTO trips (user_id, trip_name, start_date, end_date) VALUES (?,?,?,?)',
-    [user_id, trip_name, start_date, end_date],
+    [user_id, trip_name, start_date || null, end_date || null],
     (err, result) => {
       if (err) {
+        console.error(err);
         return res.status(500).json({ message: 'Database error' });
       }
 
       res.json({
-        message: 'Trip created',
-        tripId: result.insertId
+        message: 'Trip created successfully',
+        trip_id: result.insertId
       });
     }
   );
@@ -33,10 +34,11 @@ router.post('/create', (req, res) => {
  */
 router.get('/:userId', (req, res) => {
   db.query(
-    'SELECT * FROM trips WHERE user_id=?',
+    'SELECT * FROM trips WHERE user_id = ?',
     [req.params.userId],
     (err, result) => {
       if (err) {
+        console.error(err);
         return res.status(500).json({ message: 'Database error' });
       }
 
