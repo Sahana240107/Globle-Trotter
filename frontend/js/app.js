@@ -15,4 +15,5 @@ function login() {
   function goToCalendar() {
     window.location.href = "calendar-view.html";
   }
+
   
