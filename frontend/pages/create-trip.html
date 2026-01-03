@@ -1,18 +1,242 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Create Trip</title>
-  <link rel="stylesheet" href="../css/style.css">
+<meta charset="UTF-8">
+<title>GlobalTrotter – Plan New Trip</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+:root{
+    --primary:#00e5ff;
+    --glass:rgba(255,255,255,.12);
+    --blur:blur(14px);
+}
+
+*{box-sizing:border-box;font-family:Poppins}
+
+body{
+    margin:0;
+    min-height:100vh;
+    background:linear-gradient(120deg,#050014,#001a33);
+    color:white;
+}
+
+/* HEADER */
+header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:20px 40px;
+}
+
+.logo{
+    font-size:24px;
+    font-weight:600;
+    color:var(--primary);
+}
+
+.profile{
+    width:44px;height:44px;border-radius:50%;
+    background:linear-gradient(45deg,var(--primary),#00ffa6);
+}
+
+/* MAIN */
+.main{
+    max-width:1200px;
+    margin:auto;
+    padding:20px;
+}
+
+/* FORM */
+.form-card{
+    background:var(--glass);
+    backdrop-filter:var(--blur);
+    border-radius:20px;
+    padding:30px;
+    box-shadow:0 20px 40px rgba(0,0,0,.6);
+    max-width:420px;
+    margin:auto;
+    margin-top:80px; 
+}
+
+
+.form-title{
+    font-size:26px;
+    margin-bottom:20px;
+}
+
+.vertical-form{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+}
+
+.vertical-form label{
+    font-size:13px;
+    opacity:.8;
+}
+
+.vertical-form input{
+    height:48px;
+    padding:14px;
+    border:none;
+    border-radius:10px;
+    background:rgba(255,255,255,.15);
+    color:white;
+    outline:none;
+}
+
+.vertical-form input::placeholder{color:#ccc}
+
+.vertical-form button{
+    margin-top:10px;
+    padding:14px;
+    border:none;
+    border-radius:30px;
+    background:linear-gradient(45deg,var(--primary),#00ffa6);
+    font-size:16px;
+    cursor:pointer;
+}
+
+/* SLIDER */
+.section-title{
+    margin:40px 0 20px;
+    font-size:22px;
+    text-align:center;
+}
+
+
+
+
+.slider-wrap{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:14px;
+}
+
+.slider-view{
+    width:460px;          /* was 260 */
+    overflow:hidden;
+    border-radius:26px;
+}
+
+.slide{
+    min-width:460px;     /* was 260 */
+    height:420px;        /* was 340 */
+    border-radius:26px;
+    background-size:cover;
+    background-position:center;
+    display:flex;
+    align-items:flex-end;
+    padding:24px;
+    font-size:18px;
+    font-weight:600;
+    box-shadow:0 20px 50px rgba(0,0,0,.8);
+}
+
+.slider-track{
+    display:flex;
+    transition:.6s ease;
+}
+
+
+.nav{
+    background:rgba(255,255,255,.15);
+    border:none;
+    width:44px;
+    height:44px;
+    border-radius:50%;
+    color:white;
+    font-size:22px;
+    cursor:pointer;
+    backdrop-filter:blur(10px);
+    transition:.3s;
+}
+.nav:hover{background:rgba(255,255,255,.35)}
+</style>
 </head>
+
 <body>
 
-<h2>Create Trip</h2>
-<input placeholder="Trip Name">
-<input type="date">
-<input type="date">
+<header>
+    <div class="logo">🌍 GlobalTrotter</div>
+    <div class="profile"></div>
+</header>
 
-<button onclick="createTrip()">Create</button>
+<div class="main">
 
-<script src="../js/app.js"></script>
+    <div class="section-title">Suggestions for Places to Visit / Activities to Perform</div>
+
+<div class="slider-wrap">
+    <button class="nav left" onclick="slide(-1)">❮</button>
+
+    <div class="slider-view">
+        <div class="slider-track" id="slider">
+            <div class="slide" style="background-image:url('https://i.pinimg.com/736x/f6/64/33/f6643390a0aff85cf18ddce12d55c534.jpg')">Beach Resorts</div>
+            <div class="slide" style="background-image:url('https://i.pinimg.com/1200x/15/f0/14/15f014ce992de60e1f7510a13b8959d2.jpg')">Mountain Treks</div>
+            <div class="slide" style="background-image:url('https://i.pinimg.com/736x/f8/60/62/f860627debba1e46058dbff40cfdbaf8.jpg')">City Nightlife</div>
+            <div class="slide" style="background-image:url('https://i.pinimg.com/736x/5d/4c/9b/5d4c9b2754de4a946280f67420db481f.jpg')">Historical Monuments</div>
+            <div class="slide" style="background-image:url('https://i.pinimg.com/736x/32/ba/5c/32ba5cbbc35c7d40a1b175e7e1c95b0f.jpg')">Food Tours</div>
+            <div class="slide" style="background-image:url('https://i.pinimg.com/736x/6f/f0/e5/6ff0e56873bd82d698acdcb1be16d5ef.jpg')">Adventure Sports</div>
+        </div>
+    </div>
+
+    <button class="nav right" onclick="slide(1)">❯</button>
+</div>
+
+</div>
+<div class="form-card">
+    <div class="form-title">Plan a New Trip</div>
+    <form id="tripForm" class="vertical-form">
+        <label>User ID</label>
+        <input type="number" id="user_id" placeholder="Enter your user id" required>
+        <label>Trip Name</label>
+        <input type="text" id="trip_name" placeholder="Family Vacation" required>
+        <label>Start Date</label>
+        <input type="date" id="start_date">
+        <label>End Date</label>
+        <input type="date" id="end_date">
+        <button>Create Trip ✈️</button>
+    </form>
+</div>
+
+
+
+<script>
+let index=0;
+const slides=document.querySelectorAll(".slide");
+
+function slide(dir){
+    index+=dir;
+    if(index<0) index=0;
+    if(index>slides.length-1) index=slides.length-1;
+
+    document.getElementById("slider").style.transform =
+    `translateX(-${index*460}px)`;   // was 260
+
+}
+
+document.getElementById("tripForm").addEventListener("submit", async e => {
+    e.preventDefault();
+    const data={
+        user_id:user_id.value,
+        trip_name:trip_name.value,
+        start_date:start_date.value,
+        end_date:end_date.value
+    };
+    const res=await fetch("http://localhost:3000/trips/create",{
+        method:"POST",
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify(data)
+    });
+    const out=await res.json();
+    alert(out.message);
+});
+</script>
+
 </body>
 </html>
+
